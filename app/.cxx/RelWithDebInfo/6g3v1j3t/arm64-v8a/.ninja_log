@@ -1,0 +1,57 @@
+# ninja log v5
+134	3361	8157659056977873	CMakeFiles/stockfish.dir/stockfish/src/ucioption.cpp.o	24cfce493bc095a3
+77	6902	8157659092620290	CMakeFiles/stockfish.dir/stockfish/src/search.cpp.o	69391ea4b34bb82
+104	4529	8157659069000674	CMakeFiles/stockfish.dir/stockfish/src/tt.cpp.o	31161ed01287a945
+45	2384	8157659047104397	CMakeFiles/stockfish.dir/stockfish/src/bitboard.cpp.o	efc4ec7a5721f868
+16	2637	8157659049867306	CMakeFiles/stockfish.dir/stockfish/src/attacks.cpp.o	8bf071136e451e67
+153	3409	8157659057394475	CMakeFiles/stockfish.dir/stockfish/src/nnue/nnue_accumulator.cpp.o	f469152060568ff3
+69	3655	8157659060221500	CMakeFiles/stockfish.dir/stockfish/src/movegen.cpp.o	78690358bd8513f8
+195	2731	8157659050873170	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/half_ka_v2_hm.cpp.o	71ac26794a0cc9e
+94	3596	8157659059634231	CMakeFiles/stockfish.dir/stockfish/src/timeman.cpp.o	39628784c0a66840
+60	3160	8157659055049660	CMakeFiles/stockfish.dir/stockfish/src/movepick.cpp.o	e118ae47b9762c71
+53	3366	8157659057128399	CMakeFiles/stockfish.dir/stockfish/src/misc.cpp.o	5958edb408aafd2c
+163	3466	8157659058243193	CMakeFiles/stockfish.dir/stockfish/src/tune.cpp.o	d0d99cfc6cf71e8d
+27	3878	8157659062440501	CMakeFiles/stockfish.dir/stockfish/src/evaluate.cpp.o	76d858db9ecae57c
+207	3966	8157659063355379	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/full_threats.cpp.o	affab3c1f905a83a
+175	4090	8157659064556577	CMakeFiles/stockfish.dir/stockfish/src/nnue/network.cpp.o	9f3358fdda2df73
+184	4191	8157659065653993	CMakeFiles/stockfish.dir/stockfish/src/nnue/nnue_misc.cpp.o	b8c955c599556821
+2430	4722	8157659070966787	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/pp_3wide.cpp.o	c60d48882ded619e
+3193	7566	8157659099258488	CMakeFiles/stockfish.dir/stockfish/src/engine.cpp.o	fcc6a3dd527f924c
+2732	4768	8157659071417927	CMakeFiles/stockfish.dir/stockfish/src/memory.cpp.o	3d6633810b54d508
+85	4970	8157659073390995	CMakeFiles/stockfish.dir/stockfish/src/position.cpp.o	aa49400a55992839
+36	5296	8157659076651584	CMakeFiles/stockfish.dir/stockfish/src/benchmark.cpp.o	67b43ce44981fc96
+144	6756	8157659091225427	CMakeFiles/stockfish.dir/stockfish/src/syzygy/tbprobe.cpp.o	76683b841eb906e4
+2637	5501	8157659078761519	CMakeFiles/stockfish.dir/stockfish/src/score.cpp.o	822284d23795592a
+1	5878	8157659082426923	CMakeFiles/stockfish.dir/jni/stockfish_jni.cpp.o	9a0be001097de9be
+114	6024	8157659083906267	CMakeFiles/stockfish.dir/stockfish/src/thread.cpp.o	93020fb723830552
+124	6401	8157659087710486	CMakeFiles/stockfish.dir/stockfish/src/uci.cpp.o	290d0ca098862357
+7566	7678	8157659100450710	C:/Users/NXC/Desktop/Offline Chess/app/build/intermediates/cxx/RelWithDebInfo/6g3v1j3t/obj/arm64-v8a/libstockfish.so	16d03d137b31149e
+6	194	8157669823086712	C:/Users/NXC/Desktop/Offline Chess/app/build/intermediates/cxx/RelWithDebInfo/6g3v1j3t/obj/arm64-v8a/libstockfish.so	68141b7315e288f9
+0	11	0	clean	be277f46d7fa6f0c
+35	1974	8158340035649112	CMakeFiles/stockfish.dir/stockfish/src/bitboard.cpp.o	efc4ec7a5721f868
+5	2156	8158340037500163	CMakeFiles/stockfish.dir/stockfish/src/attacks.cpp.o	8bf071136e451e67
+147	2229	8158340037580129	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/half_ka_v2_hm.cpp.o	71ac26794a0cc9e
+57	2404	8158340039889807	CMakeFiles/stockfish.dir/stockfish/src/movepick.cpp.o	e118ae47b9762c71
+29	2511	8158340040959679	CMakeFiles/stockfish.dir/stockfish/src/misc.cpp.o	5958edb408aafd2c
+49	2877	8158340044029219	CMakeFiles/stockfish.dir/stockfish/src/movegen.cpp.o	78690358bd8513f8
+130	2879	8158340044499168	CMakeFiles/stockfish.dir/stockfish/src/nnue/nnue_accumulator.cpp.o	f469152060568ff3
+95	2881	8158340044629100	CMakeFiles/stockfish.dir/stockfish/src/ucioption.cpp.o	24cfce493bc095a3
+138	3026	8158340045818966	CMakeFiles/stockfish.dir/stockfish/src/tune.cpp.o	d0d99cfc6cf71e8d
+71	3142	8158340047208771	CMakeFiles/stockfish.dir/stockfish/src/timeman.cpp.o	39628784c0a66840
+2404	3869	8158340054296759	CMakeFiles/stockfish.dir/stockfish/src/memory.cpp.o	3d6633810b54d508
+2229	3882	8158340054436717	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/pp_3wide.cpp.o	c60d48882ded619e
+22	3945	8158340054876724	CMakeFiles/stockfish.dir/stockfish/src/evaluate.cpp.o	76d858db9ecae57c
+1975	4127	8158340057046356	CMakeFiles/stockfish.dir/stockfish/src/score.cpp.o	822284d23795592a
+175	4395	8158340059556020	CMakeFiles/stockfish.dir/stockfish/src/nnue/features/full_threats.cpp.o	affab3c1f905a83a
+166	4550	8158340061075807	CMakeFiles/stockfish.dir/stockfish/src/nnue/nnue_misc.cpp.o	b8c955c599556821
+157	4723	8158340062835522	CMakeFiles/stockfish.dir/stockfish/src/nnue/network.cpp.o	9f3358fdda2df73
+86	5213	8158340067694861	CMakeFiles/stockfish.dir/stockfish/src/tt.cpp.o	31161ed01287a945
+64	7647	8158340091963976	CMakeFiles/stockfish.dir/stockfish/src/position.cpp.o	aa49400a55992839
+42	8247	8158340097932240	CMakeFiles/stockfish.dir/stockfish/src/benchmark.cpp.o	67b43ce44981fc96
+2156	9044	8158340105881617	CMakeFiles/stockfish.dir/stockfish/src/engine.cpp.o	fcc6a3dd527f924c
+14	10710	8158340122748682	CMakeFiles/stockfish.dir/jni/stockfish_jni.cpp.o	9a0be001097de9be
+102	11452	8158340130128767	CMakeFiles/stockfish.dir/stockfish/src/thread.cpp.o	93020fb723830552
+112	12867	8158340144234306	CMakeFiles/stockfish.dir/stockfish/src/uci.cpp.o	290d0ca098862357
+120	13209	8158340147752469	CMakeFiles/stockfish.dir/stockfish/src/syzygy/tbprobe.cpp.o	76683b841eb906e4
+79	13948	8158340154778739	CMakeFiles/stockfish.dir/stockfish/src/search.cpp.o	69391ea4b34bb82
+13949	14084	8158340156899555	C:/Users/NXC/Desktop/Offline Chess/app/build/intermediates/cxx/RelWithDebInfo/6g3v1j3t/obj/arm64-v8a/libstockfish.so	68141b7315e288f9

@@ -1,0 +1,1 @@
+C:\Users\NXC\Desktop\Offline Chess\app\src\main\cpp\CMakeLists.txt

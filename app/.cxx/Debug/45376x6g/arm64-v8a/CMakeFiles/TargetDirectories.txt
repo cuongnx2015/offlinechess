@@ -1,0 +1,3 @@
+C:/Users/NXC/Desktop/Offline Chess/app/.cxx/Debug/45376x6g/arm64-v8a/CMakeFiles/stockfish.dir
+C:/Users/NXC/Desktop/Offline Chess/app/.cxx/Debug/45376x6g/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/NXC/Desktop/Offline Chess/app/.cxx/Debug/45376x6g/arm64-v8a/CMakeFiles/rebuild_cache.dir
