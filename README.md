@@ -1,5 +1,220 @@
 # Offline Chess
 
+A native Android chess application built with Kotlin and Jetpack Compose, running the chess rules engine and Stockfish directly on the device. Games, history, and preferences are handled locally. The application currently does not declare the Internet permission.
+
+> Development Status: Successfully built and tested on an Android 14 emulator. Built with `compileSdk`/`targetSdk` 36 and verified the 16 KB ELF alignment of the native library. Not yet tested on Android 16 devices or devices with a 16 KB page size; no licensed puzzle collection is currently available; the AAB has not yet been signed with the developer's upload key.
+
+## Table of Contents
+
+- [Features](#features)
+- [Configuration and Architecture](#configuration-and-architecture)
+- [Development Requirements](#development-requirements)
+- [Build and Testing](#build-and-testing)
+- [Running on an Emulator or Phone](#running-on-an-emulator-or-phone)
+- [Building a Release Version and Signing the AAB](#building-a-release-version-and-signing-the-aab)
+- [Google Play Preparation Checklist](#google-play-preparation-checklist)
+- [16 KB Compatibility Verification](#16-kb-compatibility-verification)
+- [Known Limitations](#known-limitations)
+- [Stockfish License](#stockfish-license)
+
+## Features
+
+- Generates legal moves; detects check, checkmate, stalemate, and special chess rules, including castling, en passant, and pawn promotion.
+- Supports FEN, SAN, and PGN; move undo; PGN import through the file picker; and PGN sharing.
+- Play against Stockfish 19 offline, choose White or Black, adjust the Skill Level, view move suggestions, and analyze multiple variations.
+- Fixed 10-minute chess clock for each player, saved with the current game and restored when the application is reopened.
+- Local game history using Room; resume the most recent game, reopen saved games, or review saved games.
+- Review mode allows users to navigate through individual positions; Stockfish analyzes each position at depth 10, and the application displays move evaluations. These are engine-based estimates, not official rankings.
+- Choose the system/light/dark theme; switch the in-app language between English, Vietnamese, Simplified Chinese, Spanish, Korean, Japanese, and French.
+- The Training screen currently displays a notification indicating that no licensed puzzle collection is available; the application does not display sample data as actual puzzles.
+
+## Configuration and Architecture
+
+| Property | Value |
+|---|---|
+| Android application ID | `com.offlinechess` |
+| `minSdk` | 26 (Android 8.0) |
+| `compileSdk` / `targetSdk` | 36 (Android 16) |
+| Current application version | `0.1.0` (`versionCode` 1) |
+| Packaged native ABI | `arm64-v8a` |
+| Gradle wrapper | 8.13 |
+| Android Gradle Plugin | 8.9.2 |
+| Kotlin | 2.0.21 |
+| NDK / CMake | NDK 27.1.12297006 / CMake 3.22.1 |
+
+- `app/src/main/java/com/offlinechess/chess/`: chess rules, PGN handling, and `ChessGameViewModel`.
+- `app/src/main/java/com/offlinechess/engine/`: Kotlin-side UCI communication.
+- `app/src/main/cpp/jni/`: JNI bridge; Stockfish is linked as a native library and does not run as an executable or through `ProcessBuilder`.
+- `app/src/main/cpp/stockfish/`: Stockfish source code.
+- `app/src/main/java/com/offlinechess/data/`: game history storage using Room and preferences using DataStore.
+- `app/src/main/java/com/offlinechess/ui/`: Compose screens.
+- `app/src/main/res/values*/`: UI strings and translations.
+- `app/src/test/`: tests for chess rules, PGN, UCI analysis, and evaluation classification.
+
+The NNUE network is bundled to allow the engine to operate offline; the application copies the network into its private storage directory when Stockfish is initialized for the first time. This is the main reason for the large installation package.
+
+## Development Requirements
+
+On Windows, the following are required:
+
+- Android Studio or Android SDK command-line tools.
+- JDK 17.
+- Android SDK Platform 36 and Android Build Tools 36.
+- NDK `27.1.12297006` and CMake `3.22.1` (can be installed through **Android Studio → SDK Manager → SDK Tools**).
+- Sufficient free disk space for the Stockfish source code, SDK/NDK, Gradle cache, and APK/AAB files; the current debug build is approximately 95 MB.
+
+The project pins the NDK/CMake versions in Gradle. Open the project in Android Studio and wait for Gradle Sync to complete; alternatively, use the Gradle wrapper in PowerShell from the project root directory.
+
+## Build and Testing
+
+Run unit tests and build the debug APK:
+
+```powershell
+.\gradlew.bat testDebugUnitTest assembleDebug
+```
+
+Output APK:
+
+```text
+app\build\outputs\apk\debug\app-debug.apk
+```
+
+Build the unsigned release variant using:
+
+```powershell
+.\gradlew.bat assembleRelease
+```
+
+The output is `app\build\outputs\apk\release\app-release-unsigned.apk`.
+
+Build the Android App Bundle:
+
+```powershell
+.\gradlew.bat bundleRelease
+```
+
+Current output:
+
+```text
+app\build\outputs\bundle\release\app-release.aab
+```
+
+The command above builds an AAB **without the developer's personal upload key**; therefore, do not upload this bundle to Play Console as a signed release build. See [Building a Release Version and Signing the AAB](#building-a-release-version-and-signing-the-aab).
+
+## Running on an Emulator or Phone
+
+### Android Studio Emulator
+
+1. Open **Tools → Device Manager** and create/start a virtual device. An Android 14 emulator has been used to test the main workflows; an Android 16 virtual device should also be added for compatibility testing.
+2. Select an ARM64 configuration if available. The APK currently only packages `arm64-v8a`; x86_64 emulators may require native translation and are not guaranteed to be supported.
+3. Select the `debug` build variant, click **Run**, or install the APK using:
+
+```powershell
+.\gradlew.bat installDebug
+```
+
+### Android Phone via USB
+
+1. Enable **Developer options** and **USB debugging** on your phone; connect it via USB and accept the authorization prompt.
+2. Check the connected device:
+
+```powershell
+adb devices
+```
+
+3. Install and launch the application:
+
+```powershell
+.\gradlew.bat installDebug
+adb shell monkey -p com.offlinechess 1
+```
+
+The phone must run Android 8.0 or later and support the ARM64 ABI. To install a manually built APK:
+
+```powershell
+adb install -r .\app\build\outputs\apk\debug\app-debug.apk
+```
+
+### Recommended Test Scenarios
+
+- Start a new game as White, make a move, and wait for Stockfish to respond; repeat with Black selected.
+- Test move undo, move suggestions, suggestion arrows, position analysis, and review of saved games.
+- Wait a few minutes to verify that the chess clock is running; close and reopen the application to check that the game and remaining time are restored.
+- Test importing a valid PGN file, sharing PGN, opening game history, and deleting a game.
+- Change the language, switch between light/dark themes, adjust the Skill Level, rotate the screen, and put the application in the background.
+- Check error logs when necessary:
+
+```powershell
+adb logcat -s AndroidRuntime OfflineChessStockfish
+```
+
+The Android 14 emulator has been tested for engine gameplay, game history, review mode, and the chess clock. Physical devices and Android 16 have not yet been tested in the current development environment.
+
+## Building a Release Version and Signing the AAB
+
+Do not share or commit the keystore, passwords, aliases, or private keys. Losing the upload key may complicate the application update process.
+
+1. Open the project in Android Studio.
+2. Select **Build → Generate Signed Bundle / APK… → Android App Bundle**.
+3. Select the `app` module. Create a new upload keystore or select an existing securely managed keystore; record its file path, alias, and password in a secure location.
+4. Select the `release` build variant and complete the wizard to generate a signed AAB.
+5. Back up the keystore offline and configure **Play App Signing** in Play Console. The upload key is used to verify uploaded releases; Google Play manages the app-signing key if Play App Signing is enabled.
+6. Keep the application ID unchanged after release. Increment `versionCode` for each upload; update `versionName` when necessary in `app/build.gradle.kts`.
+7. Verify the signature and bundle contents before distribution. Do not use the debug keystore as a release signing key.
+
+You can also generate a signed APK using the same wizard to test the release version. Debug and release builds use different signing keys; when installing an APK signed with a different key over an existing application, Android may require you to uninstall the previous version first.
+
+## Google Play Preparation Checklist
+
+A successful build does not mean the application is ready for release or guaranteed to be approved by Google Play. Before publishing:
+
+1. Review the current target API requirements in Play Console. The project currently targets API 36.
+2. Complete the app information: name, description, icon, screenshots, category, and support email.
+3. Complete the applicable Play Console forms: Data safety, content rating, target audience, advertising, app access, and privacy policy if required. Declare the actual application behavior; do not assume that being offline automatically exempts the application from these forms.
+4. Check the permissions in the merged manifest. The application currently does not declare `INTERNET`; PGN import uses the file picker provided by Android.
+5. Upload a **signed AAB** to Internal testing first; install the application from the Play testing link and test it on the devices distributed by Play.
+6. Fix issues identified in the pre-launch report; check crashes/ANRs, Android 16 compatibility, ARM64 devices, and 16 KB page-size compatibility.
+7. Use Closed testing, Open testing, or Production according to the account's eligibility and the requirements currently displayed in Play Console. Some new personal developer accounts must meet Google's specified testing duration and tester-count requirements before requesting Production access.
+8. Submit the application to Production only after the store listing, policies, testing, signing, and user support arrangements are complete.
+
+The application does not include a licensed puzzle collection. If you want to release Training as a feature with actual puzzle content, you need to select a properly licensed puzzle source, document the license terms/attribution requirements, and test offline distribution.
+
+## 16 KB Compatibility Verification
+
+The application includes a JNI/C++ library named `libstockfish.so`. CMake sets the linker option `-Wl,-z,max-page-size=16384`; the current ELF build has been checked, and its `LOAD` segments report an alignment of `0x4000`.
+
+The following checks can be performed after building on Windows:
+
+```powershell
+$readelf = "$env:LOCALAPPDATA\Android\Sdk\ndk\27.1.12297006\toolchains\llvm\prebuilt\windows-x86_64\bin\llvm-readelf.exe"
+& $readelf -l .\app\build\intermediates\stripped_native_libs\release\stripReleaseDebugSymbols\out\lib\arm64-v8a\libstockfish.so
+
+$zipalign = "$env:LOCALAPPDATA\Android\Sdk\build-tools\36.0.0\zipalign.exe"
+& $zipalign -c -P 16 -v 4 .\app\build\outputs\apk\debug\app-debug.apk
+```
+
+The commands above check artifact alignment but do not replace runtime testing. Create an emulator/device image with a 16 KB page size according to Android's instructions, install the application, and test native library initialization, NNUE loading, engine gameplay, saving/restoring games, and review mode. Repeat these checks after each update to the NDK, CMake, native libraries, or packaging configuration.
+
+## Known Limitations
+
+- The chess clock is fixed at 10 minutes per player, with no increment or customizable time control.
+- Review mode analyzes each position using Stockfish at depth 10; results depend on the engine and its settings and are not official tournament evaluations.
+- No licensed puzzle collection is available.
+- Only the `arm64-v8a` ABI is packaged; 32-bit ARM and x86 devices are not directly supported.
+- The NNUE network increases the APK size: the debug APK is approximately 95 MB, while the release APK is approximately 89 MB in the tested builds. The AAB is approximately 88 MB before Play generates device-optimized APKs.
+- The Android 14 emulator has been tested; Android 16, 16 KB page-size runtime compatibility, and physical devices still require testing.
+- The AAB generated using the Gradle command in the repository has not been signed with a personal upload key. Sign the bundle and configure Play App Signing before release.
+
+## Stockfish License
+
+The bundled engine source code is Stockfish 19, licensed under GPLv3. The source code and license are located in `app\src\main\cpp\stockfish\` and `app\src\main\cpp\stockfish\Copying.txt`. The application also bundles the NNUE network for offline engine evaluation. Before distribution, review and comply with the license obligations applicable to the source code/binaries and accompanying resources; this README does not replace legal advice.
+
+
+
+==================
+
+# Offline Chess
+
 Ứng dụng cờ vua Android native, viết bằng Kotlin và Jetpack Compose, chạy luật cờ và Stockfish trên thiết bị. Ván cờ, lịch sử và tùy chọn được xử lý cục bộ. Ứng dụng hiện không khai báo quyền Internet.
 
 > Trạng thái phát triển: đã build và chạy thử trên emulator Android 14. Đã build với `compileSdk`/`targetSdk` 36 và kiểm tra căn chỉnh ELF 16 KB cho thư viện native. Chưa kiểm thử trên thiết bị Android 16 hoặc thiết bị có page size 16 KB; chưa có bộ puzzle được cấp phép; AAB hiện chưa ký bằng upload key của nhà phát triển.
