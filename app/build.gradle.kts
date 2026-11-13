@@ -19,8 +19,8 @@ android {
         applicationId = "com.offlinechess"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "1.0.0"
         ndk {
             abiFilters += "arm64-v8a"
         }
@@ -29,6 +29,17 @@ android {
             cmake {
                 arguments += "-DANDROID_STL=c++_shared"
             }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 

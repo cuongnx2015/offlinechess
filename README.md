@@ -85,6 +85,8 @@ Build the unsigned release variant using:
 .\gradlew.bat assembleRelease
 ```
 
+The release build runs R8 code shrinking, optimization, and obfuscation, and removes unused resources. Keep `app\build\outputs\mapping\release\mapping.txt` for interpreting crash reports from that release.
+
 The output is `app\build\outputs\apk\release\app-release-unsigned.apk`.
 
 Build the Android App Bundle:
