@@ -64,6 +64,7 @@ class ChessGameViewModel : ViewModel() {
     private var gameGeneration = 0
     private var activeSearchGeneration = -1
     private var activeSearchPurpose = SearchPurpose.GAME
+    private var retriedIllegalMoveFen: String? = null
     private var pendingSearchPurpose: SearchPurpose? = null
     private val analysisByVariation = mutableMapOf<Int, AnalysisLine>()
     private var currentGameId = UUID.randomUUID().toString()
@@ -174,6 +175,7 @@ class ChessGameViewModel : ViewModel() {
         engineDepth = null
         analysisLines = emptyList()
         bestMoveHint = null
+        retriedIllegalMoveFen = null
         pendingSearchPurpose = null
         engineError = null
         importError = null
@@ -195,6 +197,7 @@ class ChessGameViewModel : ViewModel() {
             position.isGameOver || timedOutSideInternal != null
         ) return
         position = position.play(move)
+        retriedIllegalMoveFen = null
         canContinue = !position.isGameOver
         bestMoveHint = null
         persistCurrentGame()
@@ -210,6 +213,7 @@ class ChessGameViewModel : ViewModel() {
         }
         gameGeneration++
         position = previous
+        retriedIllegalMoveFen = null
         timedOutSideInternal = null
         clockUpdatedAtMillis = System.currentTimeMillis()
         canContinue = !position.isGameOver
@@ -332,6 +336,7 @@ class ChessGameViewModel : ViewModel() {
                 currentGameId = UUID.randomUUID().toString()
                 gameStartedAtMillis = System.currentTimeMillis()
                 position = imported
+                retriedIllegalMoveFen = null
                 playerSide = imported.sideToMove
                 isFlipped = playerSide == Side.BLACK
                 canContinue = !imported.isGameOver
@@ -595,10 +600,10 @@ class ChessGameViewModel : ViewModel() {
                     if (timedOutSideInternal != null) return
                     val move = moveForUci(uci)
                     if (move == null) {
-                        engineStatus = EngineStatus.ERROR
-                        engineError = "Stockfish returned an illegal move: $uci for ${position.fen}"
+                        retryIllegalEngineMove(uci, position.fen)
                     } else {
                         position = position.play(move)
+                        retriedIllegalMoveFen = null
                         canContinue = !position.isGameOver
                         persistCurrentGame()
                     }
@@ -621,6 +626,37 @@ class ChessGameViewModel : ViewModel() {
         }
     }
 
+    private fun retryIllegalEngineMove(uci: String, fen: String) {
+        if (retriedIllegalMoveFen == fen) {
+            engineStatus = EngineStatus.ERROR
+            engineError = "Stockfish returned an illegal move: $uci for $fen"
+            return
+        }
+
+        val activeEngine = engine
+        if (activeEngine == null) {
+            engineStatus = EngineStatus.ERROR
+            engineError = "Stockfish returned an illegal move: $uci for $fen"
+            return
+        }
+
+        retriedIllegalMoveFen = fen
+        val generation = gameGeneration
+        engineStatus = EngineStatus.STARTING
+        scope.launch {
+            try {
+                activeEngine.send(listOf("stop", "ucinewgame"))
+                if (generation == gameGeneration && position.fen == fen) {
+                    startSearch(SearchPurpose.GAME)
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                reportEngineError(error)
+            }
+        }
+    }
+
     private fun reportEngineError(error: Exception) {
         engineStatus = EngineStatus.ERROR
         engineError = error.message ?: error.javaClass.simpleName
@@ -628,6 +664,7 @@ class ChessGameViewModel : ViewModel() {
 
     private fun restore(game: ChessGameEntity) {
         gameGeneration++
+        retriedIllegalMoveFen = null
         currentGameId = game.id
         gameStartedAtMillis = game.startedAtMillis
         skillLevel = game.skillLevel.coerceIn(0, 20)

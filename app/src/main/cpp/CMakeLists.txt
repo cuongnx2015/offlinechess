@@ -35,6 +35,9 @@ add_library(stockfish SHARED
 target_include_directories(stockfish PRIVATE "${STOCKFISH_SRC}")
 target_compile_features(stockfish PRIVATE cxx_std_17)
 target_compile_definitions(stockfish PRIVATE NNUE_EMBEDDING_OFF NDEBUG)
+if(ANDROID_ABI STREQUAL "arm64-v8a")
+    target_compile_definitions(stockfish PRIVATE IS_64BIT USE_POPCNT USE_NEON=8)
+endif()
 target_compile_options(stockfish PRIVATE
     -O2
     -fno-exceptions
